@@ -13,6 +13,7 @@ const FRICTION = 0.99996; // per substep: very slippery ice (about 1% speed lost
 const MAX_SPEED = 2600;
 const START = { x: 120, y: 120 };
 const PX_PER_M = 30;
+const SLOWMO = 0.5;      // the penguin's world runs at half speed: same path, half as fast
 const STARTER = [[50, 165], [140, 190], [230, 225], [320, 268], [400, 300], [470, 318]];
 
 export function startPenguinRace({ tries = 3, useTry, price = 50, onEnd }) {
@@ -339,7 +340,7 @@ export function startPenguinRace({ tries = 3, useTry, price = 50, onEnd }) {
   function step(dt) {
     t += dt;
     if (playing) {
-      stepPhysics(dt);
+      stepPhysics(dt * SLOWMO);
       followCamera(dt, 6);
     } else if (settle) {
       followCamera(dt, 4);
@@ -373,7 +374,7 @@ export function startPenguinRace({ tries = 3, useTry, price = 50, onEnd }) {
     let [tx, ty] = cameraTarget();
     const k = Math.min(1, dt * rate);
     // Aim ahead by exactly how far a smoothed camera trails at this speed, so he holds his spot when fast.
-    if (playing && k < 1) { const lag = dt * (1 - k) / k; tx += pen.vx * lag; ty += pen.vy * lag; }
+    if (playing && k < 1) { const lag = dt * (1 - k) / k; tx += pen.vx * SLOWMO * lag; ty += pen.vy * SLOWMO * lag; }
     cam.x += (tx - cam.x) * k;
     cam.y += (ty - cam.y) * k;
     // Hard limits: never near the edges or behind the toolbar, and never past the middle
