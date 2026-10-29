@@ -220,6 +220,23 @@ function deviceSay(text, who, token) {
   });
 }
 
+// Recorded sound effects in the voice/ folder (like Dad's "I'm going to get you!").
+// They follow the Sound effects setting, not the read-aloud voice setting.
+export function preloadVoiceFile(file) { setup(); if (ctx) loadClip(file); }
+export function playVoiceFile(file, { volume = 1 } = {}) {
+  if (!prefs.sound || !ctx || !unlocked) return;
+  loadClip(file).then((buf) => {
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const g = ctx.createGain();
+    g.gain.value = volume;
+    src.connect(g).connect(ctx.destination);
+    duck = 0.35; applyLevel(0.1); // music dips under the voice
+    src.onended = () => { duck = 1; applyLevel(0.5); };
+    src.start();
+  }).catch(() => {});
+}
+
 export function stopSpeaking() {
   speakToken++;
   try { clipSource && clipSource.stop(); } catch (e) { /* already stopped */ }

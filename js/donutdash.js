@@ -3,7 +3,7 @@
 // arrow keys / WASD + space on a computer.
 import * as THREE from 'three';
 import { createPanda, box, mat } from './avatar.js';
-import { sfx, speak } from './audio.js';
+import { sfx, speak, playVoiceFile, preloadVoiceFile } from './audio.js';
 import { SAY } from './lines.js';
 
 const R = 12;          // room half-size
@@ -297,7 +297,21 @@ export function startDonutDash({ equipped, onEnd, triesLeft = 0, price = 50 }) {
   const ROUTE_UP = [[-7.5, 6], [-7.5, 1], [-7.5, -8.6], [-7.5, -10.5]];
   let routeStep = 0, stuckT = 0, lastBX = 0, lastBZ = 0;
 
+  // Dad's recorded "I'm going to get you!" (3 takes): once when Bandit starts chasing,
+  // then when he gets close, at most once every 7 seconds.
+  const TAUNTS = ['custom/bandit-1.m4a', 'custom/bandit-2.m4a', 'custom/bandit-3.m4a'];
+  TAUNTS.forEach(preloadVoiceFile);
+  let lastTaunt = -99, lastTake = -1, chasing = false;
+  function taunt() {
+    let k = Math.floor(Math.random() * TAUNTS.length);
+    if (k === lastTake) k = (k + 1) % TAUNTS.length;
+    lastTake = k; lastTaunt = t;
+    playVoiceFile(TAUNTS[k], { volume: 1.1 });
+  }
+
   function moveBandit(dt) {
+    if (!chasing) { chasing = true; taunt(); }
+    else if (t - lastTaunt > 7 && Math.hypot(bandit.x - player.x, bandit.z - player.z) < 4.5 && Math.abs(bandit.y - player.y) < 1.5) taunt();
     const pUp = player.y > LAND - 1 || inStairs(player.x, player.z);
     const bUp = bandit.y > LAND - 0.3 && inRing(bandit.x, bandit.z); // only once he's really on the balcony
     let tx = player.x, tz = player.z;
