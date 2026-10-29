@@ -6,7 +6,8 @@
 //
 // The API key is read from OPENAI_API_KEY or from the private file .openai-key
 // in the project folder (never served to the phone, never shown in chat).
-import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, access, unlink } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
@@ -67,7 +68,7 @@ async function tts(key, { voice, instructions }, input) {
 }
 
 const exists = (p) => access(p).then(() => true, () => false);
-const fileFor = (who, text) => `${who}/${createHash('sha1').update(who + '|' + lineKey(text)).digest('hex').slice(0, 12)}.mp3`;
+const fileFor = (who, text) => `${who}/${createHash('sha1').update(who + '|' + lineKey(text)).digest('hex').slice(0, 12)}.m4a`;
 
 async function pool(items, n, fn) {
   let i = 0, done = 0;
@@ -127,7 +128,11 @@ for (const who of Object.keys(all)) {
   await pool(batch, 6, async ({ text, file }) => {
     try {
       const mp3 = await tts(key, CAST[who], text);
-      await writeFile(join(OUT, file), mp3);
+      // Save as small AAC (about 4x smaller than OpenAI's mp3) using macOS's afconvert.
+      const tmp = join(OUT, file.replace('.m4a', '.tmp.mp3'));
+      await writeFile(tmp, mp3);
+      execFileSync('afconvert', ['-f', 'm4af', '-d', 'aac', '-b', '32000', tmp, join(OUT, file)]);
+      await unlink(tmp);
       manifest[who][lineKey(text)] = file;
     } catch (e) {
       failed++;
