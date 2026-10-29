@@ -2,7 +2,22 @@
 
 A money-learning game for iPhone. It's a web app that you add to the home screen; there's no build step.
 
-## Run it on the home Wi-Fi
+## Play it
+
+**https://castadream2.github.io/pandabucks/** (hosted free on GitHub Pages; works anywhere and offline after the first visit).
+On the iPhone: open it in Safari, then **Share → Add to Home Screen**.
+
+## Update it
+
+After changing anything, save a checkpoint and upload it. The live site updates about a minute later:
+
+```bash
+git add -A && git commit -m "what changed" && git push
+```
+
+When game files change, bump `VERSION` in `sw.js` so phones drop their old saved copy.
+
+## Test on the home Wi-Fi (optional)
 
 ```bash
 cd "/Users/maweiss/Documents/My Apps/PANDABUCKS" && node serve.mjs
