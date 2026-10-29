@@ -35,6 +35,8 @@ Tap **Share → Add to Home Screen**. The Mac has to stay on while she plays.
 - **Shop**: she pays for avatar items with her earned coins and gets change back.
 - **Game Room**: side games; 50¢ (paid by counting coins) buys 3 tries, saved until used. First game: **Donut Dash**,
   collect 5 donuts before Bandit the raccoon catches you (thumbstick + JUMP, or arrow keys + space).
+  **Penguin Line Race**: draw icy lines and press play; the penguin slides with gravity and momentum.
+  No finish line; a try is used each time he falls off the bottom. Her track is saved between visits.
 - **Wallet**: a trade machine turns exactly $1.00 in coins into a $1 bill.
 - **Parent screen**: the ⚙️ button, behind a PIN. It shows mastery, mix-ups and settings.
 

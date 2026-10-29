@@ -6,6 +6,7 @@ import { sfx, speak, setMusic } from './audio.js';
 import { SAY } from './lines.js';
 import { moneyCounter } from './shop.js';
 import { startDonutDash } from './donutdash.js';
+import { startPenguinRace } from './penguin.js';
 
 export const TRIES = 3; // one payment = 3 tries, saved until used
 
@@ -13,6 +14,7 @@ const triesLeft = (id) => (state.gameTries && state.gameTries[id]) || 0;
 
 export const GAMES = [
   { id: 'donutdash', name: 'Donut Dash', icon: '🍩', price: 50, blurb: 'Grab 5 donuts before Bandit the raccoon catches you!', play: startDonutDash },
+  { id: 'penguin', name: 'Penguin Line Race', icon: '🐧', price: 50, blurb: 'Draw an icy slide and keep the penguin going!', play: startPenguinRace, selfTries: true },
   { id: 'lava', name: 'Floor Is Lava', icon: '🌋', price: 50, blurb: 'Coming soon!', soon: true },
   { id: 'bumper', name: 'Bumper Pandas', icon: '🎡', price: 50, blurb: 'Coming soon!', soon: true },
 ];
@@ -89,6 +91,24 @@ function play(g, { onClose }) {
   closeScreen();
   document.body.classList.add('in-minigame');
   setMusic('town');
+  if (g.selfTries) {
+    // This game uses tries itself (a try is used each time the penguin falls).
+    g.play({
+      tries: triesLeft(g.id),
+      price: g.price,
+      useTry: () => {
+        state.gameTries = { ...(state.gameTries || {}), [g.id]: Math.max(0, triesLeft(g.id) - 1) };
+        save();
+        return triesLeft(g.id);
+      },
+      onEnd: ({ again }) => {
+        document.body.classList.remove('in-minigame');
+        if (again) (triesLeft(g.id) ? play(g, { onClose }) : payToPlay(g, { onClose }));
+        else openGameRoom({ onClose });
+      },
+    });
+    return;
+  }
   // Use up one try now (leaving mid-game still counts as a try).
   state.gameTries = { ...(state.gameTries || {}), [g.id]: Math.max(0, triesLeft(g.id) - 1) };
   save();

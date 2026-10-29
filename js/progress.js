@@ -51,6 +51,7 @@ export const BADGES = {
   fashion:  { name: 'Fashion Panda',  icon: '👑', desc: 'Own 5 shop items' },
   saver:    { name: 'Super Saver',    icon: '🐷', desc: 'Saved up $5.00' },
   donut_champ: { name: 'Donut Champ', icon: '🍩', desc: 'Won Donut Dash in the Game Room' },
+  penguin_pro: { name: 'Penguin Pro', icon: '🐧', desc: 'Slid 100 meters in Penguin Line Race' },
 };
 
 function freshZone(unlocked) {

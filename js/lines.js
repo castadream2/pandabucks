@@ -216,6 +216,9 @@ export const SAY = {
   ddIntro: 'Collect 5 donuts. Don\'t let Bandit the raccoon catch you!',
   ddWin: 'You got all 5 donuts! You win! Bandit is so jealous.',
   ddCaught: 'Oh no, Bandit caught you! So close! Want to try again?',
+  pgIntro: 'Draw a slide for the penguin, then press play!',
+  pgFall: 'Whoops! The penguin slid off. Fix your track and try again!',
+  pgOut: 'Out of tries! What a slide!',
 
   // ---- Shared bits (both buddies) ----
   earned: 'You earned',
@@ -270,7 +273,7 @@ export function allLines() {
     SAY.notYet, SAY.coverFirst, SAY.wrongDigit, SAY.cardPaid, SAY.yes, SAY.notQuite,
     SAY.youPay, SAY.howMuchLeft, SAY.yesLeft, SAY.countUpRule,
     ...SAFETY.flatMap((s) => [s.q, s.why]),
-    SAY.gameRoom, SAY.ddIntro, SAY.ddWin, SAY.ddCaught,
+    SAY.gameRoom, SAY.ddIntro, SAY.ddWin, SAY.ddCaught, SAY.pgIntro, SAY.pgFall, SAY.pgOut,
     ...shared,
   ];
   const ruby = [
