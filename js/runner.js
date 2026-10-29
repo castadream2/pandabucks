@@ -29,7 +29,7 @@ export function startRun(zoneId, { onExit }) {
   speak([meta.name, hello], { who });
 
   function play() {
-    const list = PLAN[zoneId]();
+    const list = PLAN[zoneId](zs.tier);
     const started = Date.now();
     let idx = 0, firstTryCount = 0;
     const root = h(`<div class="run playing" style="--zc:${meta.color}">

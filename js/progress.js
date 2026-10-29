@@ -23,9 +23,15 @@ export const ZONES = [
   { id: 'enough',   name: 'Enough?',       color: '#b98cff', len: 7, maxTier: 4, masterTier: 3,
     blurb: 'Count your money. Can you buy it?',
     tierNames: ['', '$1 bills', '+ $5 bills', 'Close calls', '+ $10 & $20'], tierNote: 'Trickier prices coming next time!' },
+  { id: 'card',     name: 'Card Mode',     color: '#22c3c3', len: 6, maxTier: 4, masterTier: 3,
+    blurb: 'Pay with your card, the smart and safe way!',
+    tierNames: ['', 'Easy compare', '+ Cents & PIN', 'Close calls & declined', 'What\'s left?'], tierNote: 'New card skills coming next time!' },
+  { id: 'shopping', name: 'Shopping Trip', color: '#ff5f7e', len: 3, maxTier: 4, masterTier: 3,
+    blurb: 'Shop at Ruby\'s Market with a list and a budget!',
+    tierNames: ['', '1 snack', 'Snack + drink', 'Full lunch', 'Pay by card'], tierNote: 'A bigger shopping list next time!' },
 ];
 ZONES.forEach((z, i) => { z.next = ZONES[i + 1] ? ZONES[i + 1].id : null; });
-export const SOON = ['Card Mode', 'Shopping Trip'];
+export const SOON = [];
 export const zone = (id) => ZONES.find((z) => z.id === id);
 
 export const BADGES = {
@@ -36,7 +42,9 @@ export const BADGES = {
   dollar_m: { name: 'Dollar Maker',   icon: '💵', desc: 'Mastered Make a Dollar' },
   bills_m:  { name: 'Bill Boss',      icon: '💸', desc: 'Mastered Bills' },
   dollarup_m: { name: 'Dollar Upper', icon: '⬆️', desc: 'Mastered Dollar Up' },
-  enough_m: { name: 'Smart Shopper',  icon: '🛒', desc: 'Mastered Enough?' },
+  enough_m: { name: 'Enough Expert',  icon: '🛒', desc: 'Mastered Enough?' },
+  card_m:   { name: 'Card Smart',     icon: '💳', desc: 'Mastered Card Mode' },
+  shopping_m: { name: 'Shopping Star', icon: '🌟', desc: 'Mastered Shopping Trip' },
   shop1:    { name: 'First Buy',      icon: '🛍️', desc: 'Bought something in the shop' },
   trade1:   { name: 'Big Trader',     icon: '🔁', desc: 'Traded coins for a dollar bill' },
   streak3:  { name: 'On Fire',        icon: '🔥', desc: 'Played 3 runs in one day' },

@@ -113,6 +113,27 @@ function bigCoin(color, edge, r = 0.9, name = null) {
   return g;
 }
 
+function mesh(geo, color, x = 0, y = 0, z = 0) {
+  const m = new THREE.Mesh(geo, mat(color));
+  m.position.set(x, y, z);
+  m.castShadow = true;
+  return m;
+}
+
+function cardTexture() {
+  const c = document.createElement('canvas');
+  c.width = 380; c.height = 240;
+  const g = c.getContext('2d');
+  const grad = g.createLinearGradient(0, 0, 380, 240);
+  grad.addColorStop(0, '#9b6bff'); grad.addColorStop(0.7, '#ff5fa2'); grad.addColorStop(1, '#ffb3d9');
+  g.fillStyle = grad; g.fillRect(0, 0, 380, 240);
+  g.fillStyle = '#fff'; g.font = '34px "Lilita One", sans-serif'; g.fillText('PANDA BANK', 22, 50);
+  g.fillStyle = '#ffd23f'; g.fillRect(24, 82, 62, 46);
+  g.fillStyle = '#fff'; g.font = '26px "Fredoka", sans-serif'; g.fillText('•••• •••• •••• 2468', 22, 175);
+  g.font = '22px "Lilita One", sans-serif'; g.fillText('DEBIT', 290, 215);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+
 // A thin floating bill with the real picture on both sides. width in world units.
 function billMesh(n, width) {
   const face = new THREE.MeshStandardMaterial({ map: tex(`img/bill-${n}.png`), roughness: 0.7 });
@@ -161,6 +182,7 @@ export class World {
 
     this.buildLights();
     this.buildPads();
+    this.minZ = Math.min(...this.pads.map((p) => p.z)) - 3; // don't scroll past the last platform
     this.buildDecor();
 
     this.panda = createPanda();
@@ -346,6 +368,39 @@ export class World {
       q.position.set(1.15, 1.5, 0.3);
       g.add(q);
       this.bobbers.push({ o: q, base: 1.5, amp: 0.25, sp: 3, ph: 0 });
+    } else if (p.id === 'card') {
+      // A giant Panda Bank card hovering over a card reader.
+      const face = new THREE.MeshStandardMaterial({ map: cardTexture(), roughness: 0.5 });
+      const edge = mat('#9b6bff');
+      const card = new THREE.Mesh(new THREE.BoxGeometry(1.9, 1.2, 0.08), [edge, edge, edge, edge, face, face]);
+      card.position.set(-0.2, 1.7, -0.1);
+      card.rotation.z = -0.15;
+      card.castShadow = true;
+      g.add(card);
+      this.bobbers.push({ o: card, base: 1.7, amp: 0.2, sp: 1.7, ph: 0 });
+      this.spinners.push({ o: card, sp: 0.8, wobble: true });
+      g.add(box(0.8, 0.5, 0.6, '#2b2d42', 0.9, 0.25, 0.5));
+      g.add(box(0.6, 0.06, 0.4, '#c9f7c1', 0.9, 0.52, 0.5));
+    } else if (p.id === 'shopping') {
+      // A chunky red shopping cart full of goodies.
+      const cart = new THREE.Group();
+      cart.add(box(1.4, 0.08, 0.9, '#ff4d6b', 0, 0.55, 0));
+      for (const [x, z] of [[-0.7, 0], [0.7, 0]]) cart.add(box(0.08, 0.6, 0.9, '#ff4d6b', x, 0.85, z));
+      for (const z of [-0.45, 0.45]) cart.add(box(1.4, 0.6, 0.08, '#ff4d6b', 0, 0.85, z));
+      cart.add(box(0.08, 0.08, 0.9, INK, 0.95, 1.25, 0));
+      cart.add(box(0.3, 0.08, 0.08, INK, 0.8, 1.2, 0));
+      for (const [x, z] of [[-0.55, -0.35], [0.55, -0.35], [-0.55, 0.35], [0.55, 0.35]]) {
+        const wh = mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.1, 10), INK, x, 0.14, z);
+        wh.rotation.x = Math.PI / 2;
+        cart.add(wh);
+      }
+      cart.add(mesh(new THREE.IcosahedronGeometry(0.28, 0), '#ff3b3b', -0.35, 1.05, 0));
+      cart.add(box(0.35, 0.5, 0.35, '#3bb8ff', 0.15, 1.1, -0.1));
+      cart.add(mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.55, 8), '#ffd23f', 0.45, 1.1, 0.15));
+      cart.position.set(-0.2, 0, -0.1);
+      cart.rotation.y = 0.5;
+      g.add(cart);
+      this.bobbers.push({ o: cart, base: 0, amp: 0.08, sp: 4, ph: 0 });
     } else if (p.soon) {
       g.add(box(0.9, 0.9, 0.9, '#9aa1b5', -0.6, 0.45, -0.2));
       g.add(box(0.7, 0.7, 0.7, '#aab1c4', 0.5, 0.35, 0.3));
@@ -421,7 +476,7 @@ export class World {
       const dy = e.clientY - lastY;
       lastY = e.clientY;
       moved += Math.abs(dy);
-      this.focusZ = Math.max(-46, Math.min(5, this.focusZ - dy * 0.05));
+      this.focusZ = Math.max(this.minZ, Math.min(5, this.focusZ - dy * 0.05));
     });
     el.addEventListener('pointerup', (e) => {
       if (start && moved < 10) this.tap(e.clientX, e.clientY);
@@ -471,7 +526,7 @@ export class World {
     const dist = from.distanceTo(to);
     const n = Math.max(1, Math.ceil(dist / 4.2));
     this.panda.root.rotation.y = Math.atan2(to.x - from.x, to.z - from.z);
-    this.focusZ = Math.max(-46, Math.min(5, p.z - 3));
+    this.focusZ = Math.max(this.minZ, Math.min(5, p.z - 3));
     this.hop = { from, to, n, i: 0, t: 0, dur: 0.42, done, id };
     sfx.hop();
   }

@@ -14,6 +14,7 @@ import { sfx } from './audio.js';
 import { SAY, A } from './lines.js';
 import { recordConfusion } from './progress.js';
 import { PLAN2, BUDDY2 } from './lessons2.js';
+import { PLAN3, BUDDY3 } from './lessons3.js';
 
 // ============ COIN CHECK ============
 function tapTheCoin(api) {
@@ -376,6 +377,7 @@ export const PLAN = {
   hop: () => [hopAlong, ...shuffle([countQuarters, countQuarters, howManyQuarters, howManyQuarters]), hopAlong],
   dollar: () => [makeDollar, makeDollar, makeDollar, makeDollar, makeDollar],
   ...PLAN2,
+  ...PLAN3,
 };
 
-export const BUDDY_FOR = { coins: 'twinkle', hop: 'twinkle', dollar: 'ruby', ...BUDDY2 };
+export const BUDDY_FOR = { coins: 'twinkle', hop: 'twinkle', dollar: 'ruby', ...BUDDY2, ...BUDDY3 };
