@@ -1,0 +1,13 @@
+{
+  "name": "PANDABUCKS",
+  "short_name": "PANDABUCKS",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#7fd6ff",
+  "theme_color": "#7fd6ff",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

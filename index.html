@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PANDABUCKS">
+  <meta name="theme-color" content="#7fd6ff">
+  <title>PANDABUCKS</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lilita+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
+</head>
+<body>
+  <canvas id="world"></canvas>
+  <div id="screen"></div>
+  <div id="hud">
+    <div class="hud-top">
+      <button id="wallet-btn" class="pill" aria-label="My wallet"><span class="coin-ico"></span><b>$0.00</b></button>
+      <div id="hello"></div>
+      <button id="music-btn" class="round small" aria-label="Music on or off">🎵</button>
+      <button id="badges-btn" class="round" aria-label="Badges">🏅</button>
+      <button id="parent-btn" class="round small" aria-label="Grown-ups">⚙️</button>
+    </div>
+    <div class="hud-bottom">
+      <div class="hint-banner">Tap a platform to play!<small>Drag up and down to explore</small></div>
+      <button id="shop-btn" class="btn shop-btn">🛍️ SHOP</button>
+    </div>
+  </div>
+  <div id="toast"></div>
+  <noscript>PANDABUCKS needs JavaScript turned on.</noscript>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
