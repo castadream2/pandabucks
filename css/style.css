@@ -552,3 +552,7 @@ body.in-minigame #hud { display: none; }
 .dd-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; align-items: stretch; }
 .gameroom .sheet-head h2 { white-space: nowrap; font-size: 28px; }
 .gameroom .price-tag { color: var(--ink); }
+.tries-tag { background: var(--yellow); color: var(--ink); border: 3px solid var(--ink); border-radius: 10px; padding: 2px 10px; font-family: 'Lilita One'; font-size: 17px; }
+.cab-tries { font-size: 13px; color: #d8d6ef; margin-top: -4px; }
+.gameroom.pay .pay-item small { display: block; font-family: 'Fredoka'; font-size: 16px; opacity: .9; }
+.dd-tries { background: rgba(255,255,255,.9); border: 3px solid var(--ink); border-radius: 999px; padding: 2px 12px; font-family: 'Lilita One'; font-size: 17px; }

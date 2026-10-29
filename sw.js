@@ -2,7 +2,7 @@
 // - Game files: try the network first (so updates arrive), fall back to the saved copy.
 // - Voice clips: saved copy first (they never change), and all of them are
 //   downloaded quietly in the background after the first visit.
-const VERSION = 'v5';
+const VERSION = 'v6';
 const CORE = `pandabucks-core-${VERSION}`;
 const VOICE = 'pandabucks-voice-v1';
 

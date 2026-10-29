@@ -10,16 +10,18 @@ const INK = '#1d1b3a';
 function layout() {
   const pads = [
     { id: 'home', name: 'PANDA HOME', x: 0, z: 10.2, r: 2.2, color: '#ffb3d9' },
-    { id: 'shop', name: 'PANDA SHOP', x: 2.6, z: 6.6, r: 1.8, color: '#ff5fa2' },
-    { id: 'games', name: 'GAME ROOM', x: -2.4, z: 7.0, r: 1.8, color: '#9b6bff' },
+    // Side areas sit on the diagonals so the path leads straight ahead to Coin Check.
+    { id: 'shop', name: 'PANDA SHOP', x: 2.7, z: 6.9, r: 1.8, color: '#ff5fa2', special: true },
+    { id: 'games', name: 'GAME ROOM', x: -2.7, z: 6.9, r: 1.8, color: '#9b6bff', special: true },
   ];
   // Zones zig-zag away from the camera like an obstacle course.
+  // Zone 1 is straight ahead of Panda Home; the rest zig-zag away.
   ZONES.forEach((zd, i) => {
-    pads.push({ id: zd.id, name: zd.name.toUpperCase(), color: zd.color, x: i % 2 ? 2.5 : -2.5, z: 2.2 - 5.8 * i, r: 2.0 });
+    pads.push({ id: zd.id, name: zd.name.toUpperCase(), color: zd.color, x: i === 0 ? 0 : i % 2 ? 2.5 : -2.5, z: 3.0 - 5.8 * i, r: 2.0 });
   });
   SOON.forEach((name, i) => {
     const k = ZONES.length + i;
-    pads.push({ id: 'soon' + i, soon: true, name: name.toUpperCase(), x: k % 2 ? 2.5 : -2.5, z: 2.2 - 5.8 * k, r: 1.9, color: '#b9bfd0' });
+    pads.push({ id: 'soon' + i, soon: true, name: name.toUpperCase(), x: k % 2 ? 2.5 : -2.5, z: 3.0 - 5.8 * k, r: 1.9, color: '#b9bfd0' });
   });
   return pads;
 }
@@ -264,10 +266,10 @@ export class World {
         this.scene.add(blk);
       }
     }
+    // One stepping block from home to each side area.
     const home = this.pads.find((p) => p.id === 'home');
-    const shop = this.pads.find((p) => p.id === 'shop');
-    for (let k = 1; k <= 1; k++) {
-      const blk = box(0.8, 0.5, 0.8, '#ffcf3f', (home.x + shop.x) / 2 + 0.4, -0.35, (home.z + shop.z) / 2);
+    for (const side of this.pads.filter((p) => p.special)) {
+      const blk = box(0.8, 0.5, 0.8, side.color, (home.x + side.x) / 2, -0.35, (home.z + side.z) / 2);
       this.bobbers.push({ o: blk, base: -0.35, amp: 0.15, sp: 1.5, ph: 3 });
       this.scene.add(blk);
     }
@@ -463,7 +465,9 @@ export class World {
       const zs = state.zones[p.id];
       let locked = p.soon || (zs && !zs.unlocked);
       const lines = p.soon ? ['COMING SOON', p.name] : locked ? ['LOCKED', p.name] : [p.name];
-      p.sign.material.map = labelTexture(lines, { bg: locked ? '#e7e9f2' : '#ffffff', fg: locked ? '#6b7088' : INK, accent: locked ? '#9aa1b5' : '#ff5fa2' });
+      // Special side areas (shop, game room) get inverted signs: colored with white text.
+      const look = locked ? { bg: '#e7e9f2', fg: '#6b7088', accent: '#9aa1b5' } : p.special ? { bg: p.color, fg: '#ffffff', accent: '#ffffff' } : { bg: '#ffffff', fg: INK, accent: '#ff5fa2' };
+      p.sign.material.map = labelTexture(lines, look);
       p.sign.material.needsUpdate = true;
       p.locked = locked;
       const top = this.padObjs[p.id].children[0];

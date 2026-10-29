@@ -126,11 +126,11 @@ function floorTexture() {
 const FLOOR_SPOTS = [[6, -4], [3, 5], [-2, -5], [6, 7]];
 const UP_SPOTS = [[10.5, -4], [0, -10.5], [-10.5, 5], [10.5, 6], [-7.5, -3, 'stair']];
 
-export function startDonutDash({ equipped, onEnd }) {
+export function startDonutDash({ equipped, onEnd, triesLeft = 0, price = 50 }) {
   const wrap = document.createElement('div');
   wrap.className = 'dd';
   wrap.innerHTML = `<canvas class="dd-canvas"></canvas>
-    <div class="dd-hud"><button class="x-btn dd-quit" aria-label="Leave game">✕</button><div class="dd-count">🍩 <b>0</b>/${GOAL}</div></div>
+    <div class="dd-hud"><button class="x-btn dd-quit" aria-label="Leave game">✕</button><div class="dd-tries">🎟️ ${triesLeft} left</div><div class="dd-count">🍩 <b>0</b>/${GOAL}</div></div>
     <div class="dd-stick hidden"><div class="dd-knob"></div></div>
     <div class="dd-stick-hint">👆 Drag here to move</div>
     <button class="dd-jump" aria-label="Jump">JUMP</button>
@@ -328,6 +328,11 @@ export function startDonutDash({ equipped, onEnd }) {
     raccoonObj.userData.tail.rotation.y = Math.sin(t * 10) * 0.5;
   }
 
+  // "TRY AGAIN · 2 left" while paid tries remain, otherwise it costs money again.
+  const againLabel = triesLeft > 0
+    ? `${'TRY AGAIN'} · ${triesLeft} ${triesLeft === 1 ? 'try' : 'tries'} left`
+    : `PLAY AGAIN · ${price < 100 ? price + '¢' : '$' + (price / 100).toFixed(2)}`;
+
   function end(won) {
     state = won ? 'won' : 'caught';
     input.x = input.z = 0;
@@ -335,12 +340,12 @@ export function startDonutDash({ equipped, onEnd }) {
       sfx.fanfare();
       speak(SAY.ddWin);
       say(`<div class="dd-big">YOU WIN! 🏆</div><div>All ${GOAL} donuts! Bandit is SO jealous.</div>
-        <div class="dd-btns"><button class="btn big dd-again">PLAY AGAIN · 50¢</button><button class="btn ghost dd-out">GAME ROOM</button></div>`, 'win');
+        <div class="dd-btns"><button class="btn big dd-again">${againLabel}</button><button class="btn ghost dd-out">GAME ROOM</button></div>`, 'win');
     } else {
       sfx.wrong();
       speak(SAY.ddCaught);
       say(`<div class="dd-big">CAUGHT! 🦝</div><div>You got ${got} of ${GOAL} donuts. So close!</div>
-        <div class="dd-btns"><button class="btn big dd-again">TRY AGAIN · 50¢</button><button class="btn ghost dd-out">GAME ROOM</button></div>`, 'lose');
+        <div class="dd-btns"><button class="btn big dd-again">${againLabel}</button><button class="btn ghost dd-out">GAME ROOM</button></div>`, 'lose');
     }
     center.querySelector('.dd-again').addEventListener('click', () => { sfx.tap(); cleanup(); onEnd({ won, again: true }); });
     center.querySelector('.dd-out').addEventListener('click', () => { sfx.tap(); cleanup(); onEnd({ won, again: false }); });
