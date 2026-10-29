@@ -136,13 +136,17 @@ export function startPenguinRace({ tries = 3, useTry, price = 50, onEnd }) {
 
   // ---- input ----
   let tool = 'draw', drawing = null, panFrom = null, pointerId = null;
+  let settle = false;           // after pausing, glide the view so there's room to draw ahead
+  let lastPtr = null;           // finger position while drawing (for edge scrolling)
   const toWorld = (e) => [e.clientX + cam.x, e.clientY + cam.y];
   canvas.addEventListener('pointerdown', (e) => {
     if (pointerId !== null || fallen) return;
     if (playing) { setPlaying(false); return; } // tapping the track while sliding pauses
     pointerId = e.pointerId;
-    canvas.setPointerCapture?.(e.pointerId);
+    try { canvas.setPointerCapture(e.pointerId); } catch { /* not every pointer can be captured */ }
     hint.classList.add('hidden');
+    settle = false; // she's taking over the view
+    lastPtr = { x: e.clientX, y: e.clientY };
     const [x, y] = toWorld(e);
     if (tool === 'draw') { drawing = [[x, y]]; lines.push(drawing); }
     else if (tool === 'erase') eraseAt(x, y);
@@ -150,6 +154,7 @@ export function startPenguinRace({ tries = 3, useTry, price = 50, onEnd }) {
   });
   canvas.addEventListener('pointermove', (e) => {
     if (e.pointerId !== pointerId) return;
+    lastPtr = { x: e.clientX, y: e.clientY };
     const [x, y] = toWorld(e);
     if (tool === 'draw' && drawing) {
       const [lx, ly] = drawing[drawing.length - 1];
@@ -160,6 +165,7 @@ export function startPenguinRace({ tries = 3, useTry, price = 50, onEnd }) {
   const up = (e) => {
     if (e.pointerId !== pointerId) return;
     pointerId = null;
+    lastPtr = null;
     if (drawing) {
       if (drawing.length < 2) lines.splice(lines.indexOf(drawing), 1);
       else { sfx.tap(); saveTrack(); }
@@ -200,6 +206,7 @@ export function startPenguinRace({ tries = 3, useTry, price = 50, onEnd }) {
   function setPlaying(on) {
     if (fallen) return;
     playing = on;
+    settle = !on; // pausing glides the view to make room in front of him
     const b = $('.pg-play');
     b.innerHTML = on ? '⏸<small>Pause</small>' : '▶️<small>Play</small>';
     b.classList.toggle('playing', on);
@@ -211,6 +218,7 @@ export function startPenguinRace({ tries = 3, useTry, price = 50, onEnd }) {
     dist = 0;
     $('.pg-dist').textContent = 0;
     cam.x = 0; cam.y = 0;
+    settle = false;
   }
 
   function fall() {
@@ -332,12 +340,53 @@ export function startPenguinRace({ tries = 3, useTry, price = 50, onEnd }) {
     t += dt;
     if (playing) {
       stepPhysics(dt);
-      // camera follows the penguin
-      const tx = pen.x - W * 0.4, ty = pen.y - H * 0.45;
-      cam.x += (tx - cam.x) * Math.min(1, dt * 4);
-      cam.y += (ty - cam.y) * Math.min(1, dt * 4);
+      followCamera(dt, 6);
+    } else if (settle) {
+      followCamera(dt, 4);
+      const [tx, ty] = cameraTarget();
+      if (Math.hypot(tx - cam.x, ty - cam.y) < 2) settle = false;
+    }
+    // Drawing near an edge scrolls the view, and the line keeps going under her finger.
+    if (drawing && lastPtr) {
+      const edge = 56, speed = 320 * dt;
+      let sx = 0, sy = 0;
+      if (lastPtr.x > W - edge) sx = speed; else if (lastPtr.x < edge) sx = -speed;
+      if (lastPtr.y > H - 150) sy = speed; else if (lastPtr.y < 90) sy = -speed;
+      if (sx || sy) {
+        cam.x += sx; cam.y += sy;
+        const x = lastPtr.x + cam.x, y = lastPtr.y + cam.y;
+        const [lx, ly] = drawing[drawing.length - 1];
+        if (Math.hypot(x - lx, y - ly) >= 10) drawing.push([x, y]);
+      }
     }
   }
+
+  // Where the view should be: the penguin on the left with room ahead when going right
+  // (on the right when going left), a little more room the faster he goes.
+  function cameraTarget() {
+    const lead = Math.min(0.08, Math.abs(pen.vx) / 12000);
+    const fx = pen.face >= 0 ? 0.25 - lead : 0.75 + lead;
+    const fy = pen.vy > 600 ? 0.33 : 0.42; // falling fast: show more below
+    return [pen.x - W * fx, pen.y - H * fy];
+  }
+  function followCamera(dt, rate) {
+    let [tx, ty] = cameraTarget();
+    const k = Math.min(1, dt * rate);
+    // Aim ahead by exactly how far a smoothed camera trails at this speed, so he holds his spot when fast.
+    if (playing && k < 1) { const lag = dt * (1 - k) / k; tx += pen.vx * lag; ty += pen.vy * lag; }
+    cam.x += (tx - cam.x) * k;
+    cam.y += (ty - cam.y) * k;
+    // Hard limits: never near the edges or behind the toolbar, and never past the middle
+    // in the direction he's sliding (so there's always room ahead).
+    const sx = pen.x - cam.x, sy = pen.y - cam.y;
+    if (pen.vx > 150 && sx > W * 0.5) cam.x = pen.x - W * 0.5;
+    if (pen.vx < -150 && sx < W * 0.5) cam.x = pen.x - W * 0.5;
+    if (sx > W * 0.92) cam.x = pen.x - W * 0.92;
+    if (sx < W * 0.08) cam.x = pen.x - W * 0.08;
+    if (sy > H * 0.72) cam.y = pen.y - H * 0.72;
+    if (sy < H * 0.12) cam.y = pen.y - H * 0.12;
+  }
+
   function frame(now) {
     const dt = Math.min(0.033, (now - last) / 1000);
     last = now;
@@ -363,7 +412,8 @@ export function startPenguinRace({ tries = 3, useTry, price = 50, onEnd }) {
   return startPenguinRace.last = {
     pen, get lines() { return lines; }, set lines(v) { lines = v; fallY = lowestY() + 700; },
     get playing() { return playing; }, get fallen() { return fallen; }, get dist() { return Math.floor(dist / PX_PER_M); },
-    get triesLeft() { return triesLeft; }, _step: step, play: () => setPlaying(true),
+    get triesLeft() { return triesLeft; }, _step: step, play: () => setPlaying(true), pause: () => setPlaying(false), cam, get W() { return W; }, get H() { return H; },
+    _ptr(x, y) { lastPtr = x == null ? null : { x, y }; }, get drawing() { return drawing; },
   };
 }
 
