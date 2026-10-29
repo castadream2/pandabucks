@@ -165,6 +165,88 @@ const BUILD = {
     }
     return g;
   },
+  // Rawlf: a brown labradoodle with a curly coat, floppy ears and a fluffy tail.
+  pet_rawlf() {
+    const g = new THREE.Group();
+    const BROWN = '#8a5a30', CURL = '#a46c3c', SNOUT = '#c08a58';
+    const curl = (x, y, z, r = 0.17, c = CURL) => g.add(mesh(new THREE.IcosahedronGeometry(r, 0), c, x, y, z));
+    for (const [x, z] of [[-0.28, 0.42], [0.28, 0.42], [-0.28, -0.42], [0.28, -0.42]]) {
+      g.add(box(0.22, 0.5, 0.22, BROWN, x, 0.25, z));
+      curl(x, 0.08, z + 0.04, 0.14, BROWN);
+    }
+    g.add(box(0.85, 0.6, 1.2, BROWN, 0, 0.78, 0));
+    // curly coat (fixed spots, so Rawlf always looks the same)
+    [[-0.35, 1.05, 0.3], [0, 1.1, 0.35], [0.35, 1.05, 0.3], [-0.3, 1.1, -0.1], [0.05, 1.12, -0.05], [0.33, 1.08, -0.15],
+     [-0.32, 1.05, -0.45], [0.02, 1.08, -0.5], [0.34, 1.04, -0.45], [-0.45, 0.8, 0.2], [0.45, 0.8, 0.2], [-0.45, 0.78, -0.3],
+     [0.45, 0.78, -0.3], [-0.42, 0.6, 0.45], [0.42, 0.6, 0.45]].forEach(([x, y, z]) => curl(x, y, z));
+    const head = new THREE.Group();
+    head.position.set(0, 1.28, 0.68);
+    head.add(box(0.62, 0.58, 0.58, BROWN, 0, 0, 0));
+    for (const [x, y, z] of [[-0.2, 0.32, 0], [0.02, 0.36, 0.05], [0.22, 0.32, -0.02], [-0.1, 0.3, -0.22], [0.12, 0.3, -0.2]]) {
+      head.add(mesh(new THREE.IcosahedronGeometry(0.17, 0), CURL, x, y, z));
+    }
+    head.add(box(0.34, 0.26, 0.3, SNOUT, 0, -0.12, 0.38));
+    head.add(box(0.13, 0.09, 0.06, '#1d1b26', 0, -0.03, 0.55));
+    head.add(box(0.1, 0.03, 0.14, '#ff7fa8', 0, -0.27, 0.5));
+    for (const s of [-1, 1]) {
+      head.add(box(0.11, 0.11, 0.04, '#1d1b26', s * 0.16, 0.08, 0.3));
+      head.add(box(0.04, 0.04, 0.02, '#ffffff', s * 0.14, 0.11, 0.32));
+      const ear = new THREE.Group();
+      ear.position.set(s * 0.36, 0.12, 0);
+      ear.add(box(0.16, 0.48, 0.32, CURL, 0, -0.2, 0));
+      ear.add(mesh(new THREE.IcosahedronGeometry(0.14, 0), CURL, 0, -0.45, 0.02));
+      ear.rotation.z = s * 0.15;
+      head.add(ear);
+    }
+    g.add(head);
+    g.add(box(0.66, 0.08, 0.62, '#e8333f', 0, 1.0, 0.62));
+    g.add(mesh(new THREE.OctahedronGeometry(0.07), '#ffd23f', 0, 0.9, 0.96));
+    const tail = new THREE.Group();
+    tail.position.set(0, 1.0, -0.62);
+    [[0, 0.1, -0.05, 0.16], [0, 0.32, -0.1, 0.17], [0, 0.52, -0.02, 0.18]].forEach(([x, y, z, r]) => tail.add(mesh(new THREE.IcosahedronGeometry(r, 0), CURL, x, y, z)));
+    g.add(tail);
+    g.userData.tail = tail;
+    g.userData.wag = 14;
+    g.scale.setScalar(0.58);
+    return g;
+  },
+  // Peanut: a small white cat with a pink collar and a bell.
+  pet_peanut() {
+    const g = new THREE.Group();
+    const WHITE = '#f6f5f0', PINKY = '#ffb3cf';
+    for (const [x, z] of [[-0.18, 0.32], [0.18, 0.32], [-0.18, -0.32], [0.18, -0.32]]) g.add(box(0.16, 0.4, 0.16, WHITE, x, 0.2, z));
+    g.add(box(0.55, 0.45, 0.9, WHITE, 0, 0.6, 0));
+    const head = new THREE.Group();
+    head.position.set(0, 1.0, 0.5);
+    head.add(box(0.56, 0.48, 0.48, WHITE, 0, 0, 0));
+    for (const s of [-1, 1]) {
+      const ear = mesh(new THREE.ConeGeometry(0.14, 0.26, 4), WHITE, s * 0.17, 0.34, 0);
+      ear.rotation.y = Math.PI / 4;
+      head.add(ear);
+      const inner = mesh(new THREE.ConeGeometry(0.08, 0.16, 4), PINKY, s * 0.17, 0.31, 0.06);
+      inner.rotation.y = Math.PI / 4;
+      head.add(inner);
+      head.add(box(0.11, 0.13, 0.03, '#5fcf6a', s * 0.13, 0.05, 0.25));
+      head.add(box(0.03, 0.11, 0.02, '#1d1b26', s * 0.13, 0.05, 0.27));
+      for (const tilt of [0.12, -0.08]) {
+        const wh = box(0.3, 0.015, 0.015, '#9aa0ad', s * 0.3, -0.07 + tilt * 0.3, 0.22);
+        wh.rotation.z = s * tilt;
+        head.add(wh);
+      }
+    }
+    head.add(box(0.08, 0.06, 0.03, '#ff8fb5', 0, -0.05, 0.26));
+    g.add(head);
+    g.add(box(0.5, 0.06, 0.46, '#ff5fa2', 0, 0.8, 0.5));
+    g.add(mesh(new THREE.IcosahedronGeometry(0.07, 0), '#ffd23f', 0, 0.73, 0.75));
+    const tail = new THREE.Group();
+    tail.position.set(0, 0.75, -0.45);
+    [[0, 0.05, -0.05], [0, 0.25, -0.15], [0, 0.47, -0.17], [0, 0.66, -0.1]].forEach(([x, y, z]) => tail.add(box(0.1, 0.24, 0.1, WHITE, x, y, z)));
+    g.add(tail);
+    g.userData.tail = tail;
+    g.userData.wag = 3;
+    g.scale.setScalar(0.5);
+    return g;
+  },
   pet_baby() {
     const p = buildPandaBody();
     p.group.scale.setScalar(0.42);
@@ -279,6 +361,7 @@ export function createPanda() {
       pet.position.lerp(target, Math.min(1, dt * 3));
       pet.position.y = root.position.y + Math.abs(Math.sin(t * 5)) * 0.25;
       pet.rotation.y = root.rotation.y;
+      if (pet.userData.tail) pet.userData.tail.rotation.y = Math.sin(t * pet.userData.wag) * 0.5; // dog wags fast, cat swishes slow
     }
   }
 

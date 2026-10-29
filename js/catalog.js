@@ -25,6 +25,8 @@ export const ITEMS = [
   { id: 'glasses_star',  slot: 'glasses', price: 110, name: 'Star Shades',     icon: '🌟' },
   { id: 'back_bamboo',   slot: 'back',    price: 130, name: 'Bamboo Backpack', icon: '🎋' },
   { id: 'back_jet',      slot: 'back',    price: 300, name: 'Jetpack',         icon: '🚀' },
+  { id: 'pet_peanut',    slot: 'pet',     price: 275, name: 'Peanut the Cat',  icon: '🐱' },
+  { id: 'pet_rawlf',     slot: 'pet',     price: 350, name: 'Rawlf the Dog',   icon: '🐶' },
   { id: 'pet_baby',      slot: 'pet',     price: 400, name: 'Baby Panda Pet',  icon: '🐼' },
 ];
 
