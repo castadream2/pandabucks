@@ -131,7 +131,7 @@ export function startRun(zoneId, { onExit }) {
       if (res.unlocked) notes.push(`<div class="note unlock">🔓 <b>${zone(res.unlocked).name}</b> is unlocked!</div>`);
       if (res.masteredNow) notes.push(`<div class="note master">⭐ You MASTERED <b>${meta.name}</b>!</div>`);
       else if (res.hintDown) notes.push('<div class="note">💪 You\'re getting so good, the helpers are turning down!</div>');
-      if (res.tierUp && zoneId === 'dollar') notes.push('<div class="note">🆕 New coins coming next time!</div>');
+      if (res.tierUp && meta.tierNote) notes.push(`<div class="note">🆕 ${meta.tierNote}</div>`);
       for (const b of res.badges) notes.push(`<div class="note badge">${BADGES[b].icon} New badge: <b>${BADGES[b].name}</b></div>`);
 
       const scr = h(`<div class="run results" style="--zc:${meta.color}">

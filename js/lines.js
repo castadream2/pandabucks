@@ -25,6 +25,49 @@ export const QUIPS = {
   },
 };
 
+// Things to buy, with fixed prices so every line can have a recorded clip.
+// band: small (< $5), mid ($5-$10), even (whole dollars), big ($10+)
+export const GOODS = [
+  { e: '🍎', name: 'apple', price: 65, band: 'small' },
+  { e: '🧃', name: 'juice box', price: 89, band: 'small' },
+  { e: '🍩', name: 'donut', price: 115, band: 'small' },
+  { e: '🍪', name: 'cookie', price: 125, band: 'small' },
+  { e: '🍫', name: 'chocolate bar', price: 139, band: 'small' },
+  { e: '🥤', name: 'soda', price: 175, band: 'small' },
+  { e: '🧁', name: 'cupcake', price: 210, band: 'small' },
+  { e: '🥨', name: 'pretzel', price: 249, band: 'small' },
+  { e: '🍕', name: 'pizza slice', price: 275, band: 'small' },
+  { e: '🌮', name: 'taco', price: 329, band: 'small' },
+  { e: '🍿', name: 'popcorn', price: 350, band: 'small' },
+  { e: '🍦', name: 'ice cream', price: 425, band: 'small' },
+  { e: '📓', name: 'notebook', price: 499, band: 'small' },
+  { e: '🧋', name: 'bubble tea', price: 535, band: 'mid' },
+  { e: '🍔', name: 'burger', price: 579, band: 'mid' },
+  { e: '🍝', name: 'pasta bowl', price: 640, band: 'mid' },
+  { e: '🥗', name: 'salad', price: 649, band: 'mid' },
+  { e: '🧦', name: 'pair of fun socks', price: 699, band: 'mid' },
+  { e: '🌯', name: 'burrito', price: 725, band: 'mid' },
+  { e: '🖍️', name: 'pack of markers', price: 789, band: 'mid' },
+  { e: '🐼', name: 'panda keychain', price: 850, band: 'mid' },
+  { e: '🍣', name: 'sushi box', price: 865, band: 'mid' },
+  { e: '🌻', name: 'bunch of flowers', price: 925, band: 'mid' },
+  { e: '🎧', name: 'pair of earbuds', price: 949, band: 'mid' },
+  { e: '🍌', name: 'banana bunch', price: 200, band: 'even' },
+  { e: '🥯', name: 'bagel', price: 300, band: 'even' },
+  { e: '🎀', name: 'hair bow', price: 400, band: 'even' },
+  { e: '✨', name: 'sticker pack', price: 500, band: 'even' },
+  { e: '🍓', name: 'smoothie', price: 600, band: 'even' },
+  { e: '🃏', name: 'game card', price: 1150, band: 'big' },
+  { e: '📚', name: 'book', price: 1299, band: 'big' },
+  { e: '🧸', name: 'teddy bear', price: 1575, band: 'big' },
+  { e: '🎨', name: 'art set', price: 1850, band: 'big' },
+  { e: '🎒', name: 'backpack', price: 2249, band: 'big' },
+  { e: '🎧', name: 'pair of headphones', price: 2499, band: 'big' },
+  { e: '🎮', name: 'video game', price: 2999, band: 'big' },
+  { e: '🛹', name: 'skateboard', price: 3500, band: 'big' },
+  { e: '👟', name: 'pair of sneakers', price: 3999, band: 'big' },
+];
+
 const MORE_EXTRA = { '5>10': ' Dimes are tiny but MIGHTY!', '1>10': ' Size doesn\'t tell you the value!' };
 
 export const SAY = {
@@ -57,6 +100,43 @@ export const SAY = {
   needMore: (c) => `You need ${A(c)} more!`,
   takeBack: (c) => `Too much! Take ${A(c)} back.`,
   emptyPaw: 'Um. My paw is empty. Tap some coins first!',
+
+  // ---- Bills (Twinkle) ----
+  tapBill: (d) => `Tap the ${nm(d)}.`,
+  thatsBill: (d) => `That's the ${nm(d)}.`,
+  billClue: (d) => `Look at the corners! The ${nm(d)} has a big ${d / 100} in each corner.`,
+  howMuchBill: 'How much is this bill worth?',
+  billRight: (d) => `Yes! That's the ${nm(d)}. It's worth ${A(d)}.`,
+  billMiss: (d) => `This is the ${nm(d)}. It's worth ${A(d)}.`,
+  billsRight: (c) => `Yes! That's ${A(c)}.`,
+  biggestFirst: 'Let\'s count together. Biggest bills first!',
+  billsNotCount: (k) => `Careful! There are ${k} bills, but they're worth different amounts. Let's count them!`,
+  showMe: (c) => `Show me ${A(c)}.`,
+  showRight: (c) => `Yes! That's exactly ${A(c)}.`,
+
+  // ---- Dollar Up (Ruby's snack stand) ----
+  goodCosts: (g) => `The ${g.name} costs ${A(g.price)}.`,
+  howManyDollars: 'How many dollars do you give?',
+  dollarUpRule: (n) => (n === 0
+    ? 'There are no dollars, just cents. Give one more. That\'s one dollar!'
+    : `Look at the dollars: ${n}. Give one more. That's ${A((n + 1) * 100)}!`),
+  evenRule: (n) => `It's exactly ${A(n * 100)}. No cents! So give exactly ${A(n * 100)}.`,
+  dollarUpRight: (n) => `Yes! ${A(n * 100)} is enough. You'll get change back.`,
+  evenRight: (n) => `Yes! Exactly ${A(n * 100)}. No change needed.`,
+  payWith: 'Tap your money to pay me. Dollar up!',
+  notEnoughDollar: 'Not enough! Give me one more dollar.',
+  tooManyDollars: (n) => `That's more than you need. Just give me ${A(n * 100)}.`,
+  changeIs: 'Here\'s your change:',
+
+  // ---- Enough? (Twinkle) ----
+  enoughAsk: 'Do you have enough money to buy it?',
+  youHave: 'You have',
+  itCosts: 'It costs',
+  isEnough: 'You have enough!',
+  notEnough: 'That\'s not enough.',
+  canBuyAsk: 'Which ONE can you buy?',
+  canBuyRight: (g) => `Yes! You can buy the ${g.name}.`,
+  tooPricey: (g) => `The ${g.name} costs ${A(g.price)}. That's more than you have.`,
 
   // ---- Shared bits (both buddies) ----
   earned: 'You earned',
@@ -96,6 +176,15 @@ export function allLines() {
     SAY.locked('Coin Check'), SAY.locked('Quarter Hop'),
     ...range(1, 400).map(SAY.needMore),
     ...range(1, 500).map(A),
+    // Bills + Enough?
+    ...BILLS.map(SAY.tapBill), ...BILLS.map(SAY.thatsBill), ...BILLS.map(SAY.billClue), SAY.howMuchBill,
+    ...BILLS.map(SAY.billRight), ...BILLS.map(SAY.billMiss), SAY.biggestFirst,
+    ...range(2, 8).map(SAY.billsNotCount),
+    ...dollars(1, 50).map(SAY.billsRight), ...dollars(1, 50).map(SAY.showMe), ...dollars(1, 50).map(SAY.showRight),
+    ...dollars(1, 50).map(SAY.needMore), ...dollars(1, 50).map(SAY.takeBack), ...dollars(1, 50).map(A),
+    SAY.enoughAsk, SAY.youHave, SAY.itCosts, SAY.isEnough, SAY.notEnough, SAY.canBuyAsk,
+    ...GOODS.map(SAY.canBuyRight), ...GOODS.map(SAY.tooPricey), ...GOODS.map((g) => A(g.price)),
+    'Bills', 'Enough?',
     ...shared,
   ];
   const ruby = [
@@ -104,9 +193,16 @@ export function allLines() {
     ...[50, 75, 100].map(SAY.giveMe), ...SAY.dollarRight, SAY.emptyPaw,
     ...range(1, 100).map(SAY.needMore), ...range(1, 150).map(SAY.takeBack),
     ...range(1, 250).map(A),
+    // Dollar Up
+    'Dollar Up', ...GOODS.map(SAY.goodCosts), SAY.howManyDollars, SAY.payWith, SAY.notEnoughDollar, SAY.changeIs,
+    ...range(0, 14).map(SAY.dollarUpRule), ...range(1, 15).map(SAY.dollarUpRight),
+    ...range(1, 15).map(SAY.evenRule), ...range(1, 15).map(SAY.evenRight), ...range(1, 15).map(SAY.tooManyDollars),
+    ...dollars(1, 20).map(A), ...GOODS.map((g) => A(g.price)),
     ...shared,
   ];
   return { twinkle: [...new Set(twinkle)], ruby: [...new Set(ruby)] };
 }
 
+function dollars(a, b) { return range(a, b).map((n) => n * 100); }
+export const BILLS = [100, 500, 1000, 2000];
 function range(a, b) { const out = []; for (let i = a; i <= b; i++) out.push(i); return out; }

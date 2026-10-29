@@ -11,17 +11,14 @@ function layout() {
   const pads = [
     { id: 'home', name: 'PANDA HOME', x: 0, z: 10.2, r: 2.2, color: '#ffb3d9' },
     { id: 'shop', name: 'PANDA SHOP', x: 2.6, z: 6.6, r: 1.8, color: '#ff5fa2' },
-    { id: 'coins', x: -2.5, z: 2.2, r: 2.0 },
-    { id: 'hop', x: 2.5, z: -3.6, r: 2.0 },
-    { id: 'dollar', x: -2.5, z: -9.4, r: 2.0 },
   ];
-  for (const zd of ZONES) {
-    const p = pads.find((q) => q.id === zd.id);
-    p.name = zd.name.toUpperCase();
-    p.color = zd.color;
-  }
+  // Zones zig-zag away from the camera like an obstacle course.
+  ZONES.forEach((zd, i) => {
+    pads.push({ id: zd.id, name: zd.name.toUpperCase(), color: zd.color, x: i % 2 ? 2.5 : -2.5, z: 2.2 - 5.8 * i, r: 2.0 });
+  });
   SOON.forEach((name, i) => {
-    pads.push({ id: 'soon' + i, soon: true, name: name.toUpperCase(), x: i % 2 ? -2.5 : 2.5, z: -15.2 - 5.8 * i, r: 1.9, color: '#b9bfd0' });
+    const k = ZONES.length + i;
+    pads.push({ id: 'soon' + i, soon: true, name: name.toUpperCase(), x: k % 2 ? 2.5 : -2.5, z: 2.2 - 5.8 * k, r: 1.9, color: '#b9bfd0' });
   });
   return pads;
 }
@@ -114,6 +111,15 @@ function bigCoin(color, edge, r = 0.9, name = null) {
   g.add(ring);
   const ring2 = ring.clone(); ring2.position.z = -0.11; g.add(ring2);
   return g;
+}
+
+// A thin floating bill with the real picture on both sides. width in world units.
+function billMesh(n, width) {
+  const face = new THREE.MeshStandardMaterial({ map: tex(`img/bill-${n}.png`), roughness: 0.7 });
+  const edge = mat('#c9d9bf');
+  const m = new THREE.Mesh(new THREE.BoxGeometry(width, width / 2.35, 0.05), [edge, edge, edge, edge, face, face]);
+  m.castShadow = true;
+  return m;
 }
 
 function billTexture() {
@@ -222,7 +228,7 @@ export class World {
       this.padTargets.push(g);
     }
     // stepping blocks between platforms, obby style
-    const order = ['home', 'coins', 'hop', 'dollar', ...SOON.map((_, i) => 'soon' + i)];
+    const order = ['home', ...ZONES.map((z) => z.id), ...SOON.map((_, i) => 'soon' + i)];
     const colors = ['#ff5fa2', '#ffcf3f', '#4fd1ff', '#7be36b', '#9b6bff'];
     for (let i = 0; i < order.length - 1; i++) {
       const a = this.pads.find((p) => p.id === order[i]);
@@ -294,6 +300,52 @@ export class World {
       g.add(bill);
       this.bobbers.push({ o: bill, base: 1.5, amp: 0.18, sp: 1.6, ph: 0 });
       this.spinners.push({ o: bill, sp: 0.6, wobble: true });
+    } else if (p.id === 'bills') {
+      // A fan of $5, $10 and $20 bills.
+      [[5, -0.9, 0.35], [10, 0, 0], [20, 0.9, -0.35]].forEach(([n, x, rz], i) => {
+        const b = billMesh(n, 1.7);
+        b.position.set(x, 1.35 + i * 0.25, -0.2 + i * 0.05);
+        b.rotation.z = rz;
+        g.add(b);
+        this.bobbers.push({ o: b, base: b.position.y, amp: 0.15, sp: 1.8, ph: i });
+      });
+    } else if (p.id === 'dollarup') {
+      // Ruby's snack stand with a giant donut.
+      g.add(box(2.0, 0.85, 0.8, '#ffffff', 0, 0.42, -0.4));
+      g.add(box(2.1, 0.12, 0.9, '#ff9a3c', 0, 0.9, -0.4));
+      for (const x of [-0.95, 0.95]) g.add(box(0.12, 1.4, 0.12, INK, x, 1.6, -0.75));
+      for (let i = 0; i < 5; i++) {
+        const a = box(0.42, 0.14, 1.0, i % 2 ? '#ffffff' : '#3bb8ff', -0.84 + i * 0.42, 2.3, -0.45);
+        a.rotation.x = 0.35;
+        g.add(a);
+      }
+      const donut = new THREE.Group();
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.2, 6, 12), mat('#c98a4b'));
+      const icing = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.16, 6, 12), mat('#ff8fc7'));
+      icing.position.z = 0.06;
+      donut.add(ring, icing);
+      donut.position.set(1.25, 1.25, 0.5);
+      g.add(donut);
+      this.spinners.push({ o: donut, sp: 1.4 });
+      this.bobbers.push({ o: donut, base: 1.25, amp: 0.2, sp: 2, ph: 1 });
+    } else if (p.id === 'enough') {
+      // A big wallet with a dollar peeking out, and a bouncing question mark.
+      const wallet = new THREE.Group();
+      wallet.add(box(1.6, 1.1, 0.35, '#8a5a33', 0, 0, 0));
+      wallet.add(box(1.62, 0.5, 0.37, '#6e4527', 0, 0.3, 0.01));
+      wallet.add(box(0.22, 0.22, 0.4, '#ffd23f', 0.62, 0.3, 0.02));
+      const b = billMesh(1, 1.3);
+      b.position.set(-0.1, 0.65, -0.05);
+      b.rotation.z = 0.15;
+      wallet.add(b);
+      wallet.position.set(-0.3, 0.75, -0.1);
+      wallet.rotation.y = 0.25;
+      g.add(wallet);
+      const q = new THREE.Sprite(new THREE.SpriteMaterial({ map: labelTexture(['?'], { bg: '#b98cff', fg: '#ffffff' }), transparent: true }));
+      q.scale.set(1.5, 1.5 * 220 / 512, 1);
+      q.position.set(1.15, 1.5, 0.3);
+      g.add(q);
+      this.bobbers.push({ o: q, base: 1.5, amp: 0.25, sp: 3, ph: 0 });
     } else if (p.soon) {
       g.add(box(0.9, 0.9, 0.9, '#9aa1b5', -0.6, 0.45, -0.2));
       g.add(box(0.7, 0.7, 0.7, '#aab1c4', 0.5, 0.35, 0.3));
@@ -302,7 +354,7 @@ export class World {
 
   buildDecor() {
     const cloudMat = mat('#ffffff', { roughness: 0.9 });
-    for (let i = 0; i < 26; i++) {
+    for (let i = 0; i < 30; i++) {
       const c = new THREE.Group();
       const n = 3 + (i % 3);
       for (let k = 0; k < n; k++) {
@@ -318,7 +370,7 @@ export class World {
       this.scene.add(c);
     }
     const cols = ['#ff5fa2', '#ffcf3f', '#4fd1ff', '#9b6bff', '#7be36b'];
-    for (let i = 0; i < 18; i++) {
+    for (let i = 0; i < 24; i++) {
       const side = i % 2 ? 1 : -1;
       const b = box(0.6 + Math.random() * 0.6, 0.6 + Math.random() * 0.6, 0.6 + Math.random() * 0.6, cols[i % cols.length],
         side * (5 + Math.random() * 3), 1 + Math.random() * 4, 10 - i * 2.4);
@@ -369,7 +421,7 @@ export class World {
       const dy = e.clientY - lastY;
       lastY = e.clientY;
       moved += Math.abs(dy);
-      this.focusZ = Math.max(-42, Math.min(5, this.focusZ - dy * 0.05));
+      this.focusZ = Math.max(-46, Math.min(5, this.focusZ - dy * 0.05));
     });
     el.addEventListener('pointerup', (e) => {
       if (start && moved < 10) this.tap(e.clientX, e.clientY);
@@ -419,7 +471,7 @@ export class World {
     const dist = from.distanceTo(to);
     const n = Math.max(1, Math.ceil(dist / 4.2));
     this.panda.root.rotation.y = Math.atan2(to.x - from.x, to.z - from.z);
-    this.focusZ = Math.max(-42, Math.min(5, p.z - 3));
+    this.focusZ = Math.max(-46, Math.min(5, p.z - 3));
     this.hop = { from, to, n, i: 0, t: 0, dur: 0.42, done, id };
     sfx.hop();
   }

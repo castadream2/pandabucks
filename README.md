@@ -20,7 +20,7 @@ When game files change, bump `VERSION` in `sw.js` so phones drop their old saved
 ## Test on the home Wi-Fi (optional)
 
 ```bash
-cd "/Users/maweiss/Documents/My Apps/PANDABUCKS" && node serve.mjs
+cd path/to/PANDABUCKS && node serve.mjs
 ```
 
 It prints the address to open. On the iPhone (same Wi-Fi), open Safari and go to that address. Use `http://`, not `https://`.
@@ -30,7 +30,8 @@ Tap **Share → Add to Home Screen**. The Mac has to stay on while she plays.
 ## What's in the slice
 
 - **Panda Town**: a 3D obstacle-course hub (Three.js). Tap a platform and the panda hops there.
-- **Zones**: Coin Check → Quarter Hop → Make a Dollar. They unlock in order.
+- **Zones**: Coin Check → Quarter Hop → Make a Dollar → Bills → Dollar Up → Enough?. They unlock in order.
+  Next up: Card Mode and Shopping Trip.
 - **Shop**: she pays for avatar items with her earned coins and gets change back.
 - **Wallet**: a trade machine turns exactly $1.00 in coins into a $1 bill.
 - **Parent screen**: the ⚙️ button, behind a PIN. It shows mastery, mix-ups and settings.

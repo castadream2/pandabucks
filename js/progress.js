@@ -3,15 +3,29 @@ import { breakDown, sum } from './money.js';
 
 const KEY = 'pandabucks.v1';
 
+// Zones in play order. Each unlocks after a good run in the one before it.
+//   maxTier: highest difficulty step. masterTier: step needed before good days count toward mastery.
+//   tierNames: optional labels for the parent screen. tierNote: shown when a new step unlocks.
 export const ZONES = [
-  { id: 'coins',  name: 'Coin Check',    color: '#ffcf3f', len: 8, next: 'hop',
+  { id: 'coins',    name: 'Coin Check',    color: '#ffcf3f', len: 8, maxTier: 3, masterTier: 1,
     blurb: 'Know your coins!' },
-  { id: 'hop',    name: 'Quarter Hop',   color: '#4fd1ff', len: 6, next: 'dollar',
+  { id: 'hop',      name: 'Quarter Hop',   color: '#4fd1ff', len: 6, maxTier: 3, masterTier: 1,
     blurb: 'Count by quarters: 25, 50, 75, $1!' },
-  { id: 'dollar', name: 'Make a Dollar', color: '#7be36b', len: 5, next: null,
-    blurb: 'Give exactly one dollar in change.' },
+  { id: 'dollar',   name: 'Make a Dollar', color: '#7be36b', len: 5, maxTier: 4, masterTier: 3,
+    blurb: 'Give exactly one dollar in change.',
+    tierNames: ['', 'Quarters', '+ Dimes', '+ Nickels', '+ Pennies'], tierNote: 'New coins coming next time!' },
+  { id: 'bills',    name: 'Bills',         color: '#5fdc8f', len: 7, maxTier: 4, masterTier: 3,
+    blurb: 'Know your bills and count them, biggest first!',
+    tierNames: ['', '$1 + $5', '+ $10', '+ $20', 'Bigger amounts'], tierNote: 'New bills coming next time!' },
+  { id: 'dollarup', name: 'Dollar Up',     color: '#ff9a3c', len: 6, maxTier: 4, masterTier: 3,
+    blurb: 'Look at the dollars. Give ONE MORE!',
+    tierNames: ['', 'Up to $5', 'Up to $10', '+ Even prices', '+ $5 bill'], tierNote: 'New prices coming next time!' },
+  { id: 'enough',   name: 'Enough?',       color: '#b98cff', len: 7, maxTier: 4, masterTier: 3,
+    blurb: 'Count your money. Can you buy it?',
+    tierNames: ['', '$1 bills', '+ $5 bills', 'Close calls', '+ $10 & $20'], tierNote: 'Trickier prices coming next time!' },
 ];
-export const SOON = ['Bills', 'Dollar Up', 'Enough?', 'Card Mode', 'Shopping Trip'];
+ZONES.forEach((z, i) => { z.next = ZONES[i + 1] ? ZONES[i + 1].id : null; });
+export const SOON = ['Card Mode', 'Shopping Trip'];
 export const zone = (id) => ZONES.find((z) => z.id === id);
 
 export const BADGES = {
@@ -20,6 +34,9 @@ export const BADGES = {
   coins_m:  { name: 'Coin Expert',    icon: '🪙', desc: 'Mastered Coin Check' },
   hop_m:    { name: 'Quarter Hopper', icon: '🐸', desc: 'Mastered Quarter Hop' },
   dollar_m: { name: 'Dollar Maker',   icon: '💵', desc: 'Mastered Make a Dollar' },
+  bills_m:  { name: 'Bill Boss',      icon: '💸', desc: 'Mastered Bills' },
+  dollarup_m: { name: 'Dollar Upper', icon: '⬆️', desc: 'Mastered Dollar Up' },
+  enough_m: { name: 'Smart Shopper',  icon: '🛒', desc: 'Mastered Enough?' },
   shop1:    { name: 'First Buy',      icon: '🛍️', desc: 'Bought something in the shop' },
   trade1:   { name: 'Big Trader',     icon: '🔁', desc: 'Traded coins for a dollar bill' },
   streak3:  { name: 'On Fire',        icon: '🔥', desc: 'Played 3 runs in one day' },
@@ -39,7 +56,7 @@ function fresh() {
     wallet: { 1: 0, 5: 0, 10: 0, 25: 0, 100: 0, 500: 0, 1000: 0, 2000: 0 },
     owned: [],
     equipped: { hat: null, glasses: null, shirt: null, back: null, pet: null },
-    zones: { coins: freshZone(true), hop: freshZone(false), dollar: freshZone(false) },
+    zones: Object.fromEntries(ZONES.map((z, i) => [z.id, freshZone(i === 0)])),
     confusions: {},
     badges: [],
     pin: null,
@@ -61,6 +78,13 @@ function load() {
       merged.settings = { ...base.settings, ...s.settings };
       merged.stats = { ...base.stats, ...s.stats };
       merged.zones = { ...base.zones, ...s.zones };
+      // A zone added in an update unlocks if she already did well in the zone before it.
+      ZONES.forEach((z, i) => {
+        const prev = ZONES[i - 1];
+        if (prev && !merged.zones[z.id].unlocked && merged.zones[prev.id].runs.some((r) => r.total && r.firstTry / r.total >= 0.8)) {
+          merged.zones[z.id].unlocked = true;
+        }
+      });
       return merged;
     }
   } catch (e) { /* fall through */ }
@@ -151,10 +175,10 @@ export function recordRun(zoneId, { firstTry, total, hint, tier, ms }) {
   state.stats.runDays[day] = (state.stats.runDays[day] || 0) + 1;
 
   if (pct >= 0.8) {
-    const counts = hint <= 1 && (zoneId !== 'dollar' || tier >= 3);
+    const counts = hint <= 1 && tier >= (meta.masterTier || 1);
     if (counts && !z.goodDays.includes(day)) z.goodDays.push(day);
     if (z.hint > 0) { z.hint--; out.hintDown = true; }
-    const maxTier = zoneId === 'dollar' ? 4 : 3;
+    const maxTier = meta.maxTier || 3;
     if (z.tier < maxTier) { z.tier++; out.tierUp = true; }
     if (meta.next && !state.zones[meta.next].unlocked) {
       state.zones[meta.next].unlocked = true;

@@ -403,3 +403,45 @@ em { font-style: normal; color: var(--pink); }
 .fb-text { font-size: 21px; line-height: 1.3; margin-top: 4px; }
 .fb-text i { font-style: normal; color: #6b4bd6; }
 .feedback .btn { width: 100%; background: var(--green); font-size: 32px; }
+
+/* ---------- Bills / Dollar Up / Enough? ---------- */
+.bill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 400px; }
+.bill-btn { background: #fff; border: 4px solid var(--ink); border-radius: 20px; box-shadow: var(--shadow); padding: 14px 6px; display: flex; align-items: center; justify-content: center; }
+.bill-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--ink); }
+.one-bill { background: #fff; border: 4px solid var(--ink); border-radius: 24px; padding: 16px; box-shadow: var(--shadow); }
+.bill-row { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; max-width: 440px; }
+.bill-count { position: relative; background: none; border: none; padding: 24px 2px 2px; border-radius: 10px; }
+.bill-count .q-count { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-family: 'Lilita One'; font-size: 20px; color: var(--pink); -webkit-text-stroke: .5px var(--ink); white-space: nowrap; }
+.bill-count.counted .money { transform: translateY(-3px) rotate(-3deg); }
+.bill-count.counted img { box-shadow: 0 0 0 3px #fff, 0 0 12px 4px var(--green); border-radius: 4px; }
+.pile.bills { gap: 8px; }
+.pile-bill { background: none; border: none; padding: 2px; border-radius: 8px; }
+.pile-bill:active { transform: scale(.94); }
+.pile-bill.glow.remove { animation: glowred 1s infinite; }
+.tray-coins .pile-bill img { width: 76px !important; height: auto !important; }
+
+.good-card { background: #fff; border: 4px solid var(--ink); border-radius: 22px; box-shadow: var(--shadow); padding: 10px 18px; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 180px; }
+.good-card.small { flex-direction: row; gap: 12px; padding: 8px 14px; }
+.good-card.small .good-emoji { font-size: 40px; }
+.good-card.small .price-tag.big { font-size: 30px; }
+.good-emoji { font-size: 64px; line-height: 1; }
+.good-name { font-family: 'Lilita One'; font-size: 20px; text-transform: capitalize; }
+.pt-cents { font-size: .65em; opacity: .75; }
+.hl-dollars .pt-dollars { background: var(--yellow); border-radius: 8px; padding: 0 4px; box-shadow: 0 0 0 3px var(--ink); }
+.rule-card { background: #fff4d6; border: 3px solid var(--ink); border-radius: 16px; padding: 8px 12px; font-size: 18px; text-align: center; max-width: 380px; }
+.rule-card small { font-size: 15px; color: #6b7088; }
+.stacks { justify-content: center; }
+.change { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.change-coins { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; }
+.wallet-label { font-family: 'Lilita One'; font-size: 18px; }
+.wallet-label small { font-family: 'Fredoka'; font-size: 14px; color: #6b7088; }
+.yesno .btn { min-width: 140px; }
+.yesno .yes { background: var(--green); }
+.yesno .no { background: #ffb3c1; }
+.goods-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; width: 100%; }
+.goods-grid .good-card { min-width: 0; width: calc(50% - 8px); max-width: 190px; padding: 8px 6px; }
+.goods-grid .good-emoji { font-size: 44px; }
+.goods-grid .good-name { font-size: 16px; text-align: center; }
+.goods-grid .price-tag.big { font-size: 26px; padding: 2px 12px 2px 28px; }
+.good-card.pick:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--ink); }
+.good-card.nope { opacity: .55; }

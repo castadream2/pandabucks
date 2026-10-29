@@ -13,6 +13,7 @@ import { h, $$, onTap, pick, shuffle, rand, wait } from './ui.js';
 import { sfx } from './audio.js';
 import { SAY, A } from './lines.js';
 import { recordConfusion } from './progress.js';
+import { PLAN2, BUDDY2 } from './lessons2.js';
 
 // ============ COIN CHECK ============
 function tapTheCoin(api) {
@@ -131,7 +132,7 @@ function countQuarters(api) {
   const [lo, hi] = api.tier === 1 ? [2, 4] : api.tier === 2 ? [3, 6] : [4, 8];
   const n = lo + rand(hi - lo + 1);
   const total = n * 25;
-  let counted = 0;
+  let counted = 0, countingTogether = false;
   api.prompt('How much money is this?', SAY.howMuchMoney);
   const row = h(`<div class="q-row">${Array.from({ length: n }, (_, i) => `<button class="q-btn" data-i="${i}"><b class="q-count"></b>${coinSVG(25, { px: 68, side: 'random' })}</button>`).join('')}</div>`);
   const tip = h(`<div class="tip">${api.hint >= 1 ? 'Tap each quarter to count: 25, 50, 75...' : 'Tap the quarters to count them'}</div>`);
@@ -157,11 +158,13 @@ function countQuarters(api) {
 
   for (const b of $$('.choice', choices)) {
     onTap(b, async () => {
+      if (countingTogether) return;
       const v = +b.dataset.v;
       if (v === total) { b.classList.add('good'); api.right(`Yes! ${n} quarters = ${fmtShort(total)}.`, SAY.countRight(n)); return; }
       wiggle(b);
       api.miss(v === n ? `Careful! There are ${n} coins, but each quarter is worth 25¢. Let's count by 25s!` : 'Let\'s count by 25s together!', v === n ? SAY.countMissCoins(n) : SAY.countTogether);
       // Count them all out loud, slowly.
+      countingTogether = true;
       for (const q of $$('.q-btn', row)) { q.classList.remove('counted'); q.querySelector('.q-count').textContent = ''; }
       counted = 0;
       for (const q of $$('.q-btn', row)) {
@@ -172,6 +175,7 @@ function countQuarters(api) {
         sfx.coin();
         api.speak(A(counted * 25));
       }
+      countingTogether = false;
       choices.querySelector(`[data-v="${total}"]`).classList.add('glow');
     }, { sound: false });
   }
@@ -371,6 +375,7 @@ export const PLAN = {
   coins: () => shuffle([tapTheCoin, tapTheCoin, tapTheCoin, worthMore, worthMore, worthMore, howMuchCoin, howMuchCoin]),
   hop: () => [hopAlong, ...shuffle([countQuarters, countQuarters, howManyQuarters, howManyQuarters]), hopAlong],
   dollar: () => [makeDollar, makeDollar, makeDollar, makeDollar, makeDollar],
+  ...PLAN2,
 };
 
-export const BUDDY_FOR = { coins: 'twinkle', hop: 'twinkle', dollar: 'ruby' };
+export const BUDDY_FOR = { coins: 'twinkle', hop: 'twinkle', dollar: 'ruby', ...BUDDY2 };

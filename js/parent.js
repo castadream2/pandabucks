@@ -67,7 +67,7 @@ export function openParent({ onClose, world }) {
         const hintTxt = ['Off', 'Low', 'High'][zs.hint];
         return `<div class="pz">
           <div class="pz-head"><b>${z.name}</b><span class="status ${status[1]}">${status[0]}</span></div>
-          <div class="pz-meta">Helpers: <b>${hintTxt}</b>${z.id === 'dollar' ? ` · Coins level: <b>${['', 'Quarters', '+ Dimes', '+ Nickels', '+ Pennies'][zs.tier]}</b>` : ` · Level <b>${zs.tier}</b>`}
+          <div class="pz-meta">Helpers: <b>${hintTxt}</b>${z.tierNames ? ` · Level: <b>${z.tierNames[zs.tier]}</b>` : ` · Level <b>${zs.tier}</b>`}
             · Good days: <b>${zs.goodDays.length}/2</b> · Runs: <b>${zs.runs.length}</b></div>
           <div class="pz-bars">${bars || '<span class="muted">No runs yet</span>'}</div>
         </div>`;
