@@ -3,6 +3,7 @@ import { World } from './world.js';
 import { state, save, addMoney, ZONES, walletTotal } from './progress.js';
 import { startRun } from './runner.js';
 import { openShop, openWallet } from './shop.js';
+import { openGameRoom } from './gameroom.js';
 import { openParent, openBadges } from './parent.js';
 import { prefs, speak, sfx, setMusic, refreshMusic } from './audio.js';
 import { h, $, onTap, openScreen, closeScreen, toast, confetti, buddyHTML, pick } from './ui.js';
@@ -62,6 +63,11 @@ function onPad(id, { locked, soon }) {
   if (id === 'home') {
     world.cheer(2);
     toast(pick(['🐼 Home sweet home!', '🎋 Munch munch... bamboo break!', '🐼 Tap a zone to play!']));
+    return;
+  }
+  if (id === 'games') {
+    world.stop();
+    openGameRoom({ onClose: backToTown });
     return;
   }
   if (id === 'shop') {

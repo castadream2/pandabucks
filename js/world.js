@@ -11,6 +11,7 @@ function layout() {
   const pads = [
     { id: 'home', name: 'PANDA HOME', x: 0, z: 10.2, r: 2.2, color: '#ffb3d9' },
     { id: 'shop', name: 'PANDA SHOP', x: 2.6, z: 6.6, r: 1.8, color: '#ff5fa2' },
+    { id: 'games', name: 'GAME ROOM', x: -2.4, z: 7.0, r: 1.8, color: '#9b6bff' },
   ];
   // Zones zig-zag away from the camera like an obstacle course.
   ZONES.forEach((zd, i) => {
@@ -285,6 +286,24 @@ export class World {
         g.add(stalk);
       }
       g.add(box(1.2, 0.3, 1.0, '#ff8fc7', 1.2, 0.15, 0.6));
+    } else if (p.id === 'games') {
+      // A chunky arcade cabinet with a glowing screen and a spinning donut.
+      g.add(box(1.3, 1.9, 1.0, '#2b2d42', 0, 0.95, -0.4));
+      const scr = box(1.0, 0.7, 0.08, '#4fd1ff', 0, 1.45, 0.12);
+      scr.material = mat('#4fd1ff', { emissive: '#4fd1ff', emissiveIntensity: 0.6 });
+      g.add(scr);
+      g.add(box(1.3, 0.3, 0.5, '#ff5fa2', 0, 0.85, 0.2));
+      g.add(box(0.12, 0.3, 0.12, '#ffd23f', -0.3, 1.1, 0.3));
+      for (const x of [0.15, 0.4]) g.add(box(0.14, 0.08, 0.14, '#ff3b6b', x, 1.03, 0.3));
+      const donut = new THREE.Group();
+      donut.add(new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.16, 6, 12), mat('#c98a4b')));
+      const icing = new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.12, 6, 12), mat('#ff8fc7'));
+      icing.position.z = 0.05;
+      donut.add(icing);
+      donut.position.set(1.0, 2.3, 0.2);
+      g.add(donut);
+      this.spinners.push({ o: donut, sp: 1.8 });
+      this.bobbers.push({ o: donut, base: 2.3, amp: 0.2, sp: 2.2, ph: 0.5 });
     } else if (p.id === 'shop') {
       g.add(box(2.2, 0.9, 0.9, '#ffffff', 0, 0.45, -0.3));
       g.add(box(2.3, 0.12, 1.0, '#ff5fa2', 0, 0.95, -0.3));

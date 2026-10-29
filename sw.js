@@ -2,13 +2,13 @@
 // - Game files: try the network first (so updates arrive), fall back to the saved copy.
 // - Voice clips: saved copy first (they never change), and all of them are
 //   downloaded quietly in the background after the first visit.
-const VERSION = 'v4';
+const VERSION = 'v5';
 const CORE = `pandabucks-core-${VERSION}`;
 const VOICE = 'pandabucks-voice-v1';
 
 const CORE_FILES = [
   './', './index.html', './manifest.json', './css/style.css',
-  './js/main.js', './js/world.js', './js/avatar.js', './js/catalog.js', './js/lessons.js', './js/lessons2.js', './js/lessons3.js', './js/lines.js',
+  './js/main.js', './js/world.js', './js/avatar.js', './js/catalog.js', './js/lessons.js', './js/lessons2.js', './js/lessons3.js', './js/gameroom.js', './js/donutdash.js', './js/lines.js',
   './js/money.js', './js/parent.js', './js/progress.js', './js/runner.js', './js/shop.js', './js/ui.js', './js/audio.js',
   './js/vendor/three.module.js', './voice/manifest.json',
   './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png',

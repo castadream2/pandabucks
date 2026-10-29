@@ -9,7 +9,7 @@ import { SAY, A } from './lines.js';
 
 // Wallet stacks on top, a counter below. Tap a stack to put one on the counter;
 // tap the counter to take it back.
-function moneyCounter(root, { coinsOnly = false, onChange = () => {}, showTotal = true, counterLabel = 'Counter' } = {}) {
+export function moneyCounter(root, { coinsOnly = false, onChange = () => {}, showTotal = true, counterLabel = 'Counter' } = {}) {
   const counts = { ...state.wallet };
   const placed = [];
   const el = h(`<div class="counter-ui">

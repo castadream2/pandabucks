@@ -211,6 +211,12 @@ export const SAY = {
   approved: 'Approved! Thanks for shopping at Ruby\'s Market.',
   tripDone: ['Nice shopping. I\'m almost impressed.', 'You did it. Come back anytime. Or don\'t. Kidding.', 'Smart shopper. Ruby approves.'],
 
+  // ---- Game Room (Twinkle) ----
+  gameRoom: 'Welcome to the Game Room! Every game costs money to play. Pick one!',
+  ddIntro: 'Collect 5 donuts. Don\'t let Bandit the raccoon catch you!',
+  ddWin: 'You got all 5 donuts! You win! Bandit is so jealous.',
+  ddCaught: 'Oh no, Bandit caught you! So close! Want to try again?',
+
   // ---- Shared bits (both buddies) ----
   earned: 'You earned',
   bonus: 'Bonus!',
@@ -264,6 +270,7 @@ export function allLines() {
     SAY.notYet, SAY.coverFirst, SAY.wrongDigit, SAY.cardPaid, SAY.yes, SAY.notQuite,
     SAY.youPay, SAY.howMuchLeft, SAY.yesLeft, SAY.countUpRule,
     ...SAFETY.flatMap((s) => [s.q, s.why]),
+    SAY.gameRoom, SAY.ddIntro, SAY.ddWin, SAY.ddCaught,
     ...shared,
   ];
   const ruby = [

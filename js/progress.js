@@ -50,6 +50,7 @@ export const BADGES = {
   streak3:  { name: 'On Fire',        icon: '🔥', desc: 'Played 3 runs in one day' },
   fashion:  { name: 'Fashion Panda',  icon: '👑', desc: 'Own 5 shop items' },
   saver:    { name: 'Super Saver',    icon: '🐷', desc: 'Saved up $5.00' },
+  donut_champ: { name: 'Donut Champ', icon: '🍩', desc: 'Won Donut Dash in the Game Room' },
 };
 
 function freshZone(unlocked) {
